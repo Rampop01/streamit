@@ -1,0 +1,632 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   PAYSTREAM — SHINY BLACK + ORANGE THEME
+   Premium, glossy, high-contrast
+   ============================================ */
+
+@layer base {
+  :root {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 15 97% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 30 100% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 14%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 15 97% 59%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
+    --ring: 15 97% 59%;
+    --radius: 0.75rem;
+
+    --stacks-orange: 15 97% 59%;
+    --stacks-orange-light: 15 100% 70%;
+    --stacks-orange-deep: 15 78% 47%;
+    --stacks-amber: 30 100% 55%;
+    --stacks-warm: 25 90% 62%;
+
+    --sidebar-background: 0 0% 4%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 15 97% 59%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 10%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 14%;
+    --sidebar-ring: 15 97% 59%;
+
+    --chart-1: 15 97% 59%;
+    --chart-2: 30 100% 55%;
+    --chart-3: 0 80% 55%;
+    --chart-4: 45 90% 55%;
+    --chart-5: 350 80% 60%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #0a0a0a; }
+  ::-webkit-scrollbar-thumb { background: #FC6432; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #e55a2b; }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+}
+
+/* ============================================
+   SHINY GLASS CARDS
+   High contrast, glossy surfaces
+   ============================================ */
+
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-strong {
+  background: rgba(10, 10, 10, 0.85);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: linear-gradient(
+    145deg,
+    rgba(25, 25, 25, 0.95) 0%,
+    rgba(15, 15, 15, 0.95) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(252, 100, 50, 0.35);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(252, 100, 50, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-3px);
+}
+
+/* Glossy shine sweep */
+.mirror-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.mirror-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.04) 45%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 55%,
+    transparent 60%
+  );
+  animation: mirror-sweep 5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes mirror-sweep {
+  0%, 100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+/* ============================================
+   LIGHTNING / ELECTRICAL EFFECTS
+   ============================================ */
+
+.lightning-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.lightning-border::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #FC6432,
+    #FFA726,
+    #FC6432,
+    transparent
+  );
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  animation: lightning-flow 3s linear infinite;
+  background-size: 200% 100%;
+}
+
+@keyframes lightning-flow {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.electric-glow {
+  box-shadow:
+    0 0 15px rgba(252, 100, 50, 0.35),
+    0 0 30px rgba(252, 100, 50, 0.15),
+    0 0 60px rgba(252, 100, 50, 0.05);
+}
+
+.lightning-flash {
+  animation: bolt-flash 3s ease-in-out infinite;
+}
+
+@keyframes bolt-flash {
+  0%, 100% { opacity: 0; transform: scale(1); }
+  2% { opacity: 1; transform: scale(1.2); }
+  4% { opacity: 0.2; transform: scale(1); }
+  6% { opacity: 0.9; transform: scale(1.15); }
+  8% { opacity: 0; transform: scale(1); }
+  30% { opacity: 0; }
+  32% { opacity: 1; transform: scale(1.3); }
+  34% { opacity: 0; transform: scale(1); }
+  50% { opacity: 0; }
+  52% { opacity: 0.95; transform: scale(1.2); }
+  54% { opacity: 0.1; transform: scale(1); }
+  56% { opacity: 0.7; transform: scale(1.1); }
+  58% { opacity: 0; transform: scale(1); }
+}
+
+/* ============================================
+   GRADIENT TEXT
+   ============================================ */
+
+.gradient-text-stacks {
+  background: linear-gradient(135deg, #FC6432 0%, #FFA726 50%, #FF7043 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: gradient-shift 4s ease-in-out infinite;
+}
+
+.gradient-text-fire {
+  background: linear-gradient(135deg, #FF6B35 0%, #FFD700 50%, #FF6B35 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: gradient-shift 3s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% center; }
+  50% { background-position: 200% center; }
+  100% { background-position: 0% center; }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-15px) rotate(2deg); }
+  75% { transform: translateY(10px) rotate(-2deg); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-25px); }
+}
+
+@keyframes float-reverse {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(20px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(252, 100, 50, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(252, 100, 50, 0.6), 0 0 80px rgba(252, 100, 50, 0.2);
+  }
+}
+
+@keyframes slide-up-fade {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   HERO BACKGROUND
+   ============================================ */
+
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(252, 100, 50, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(252, 100, 50, 0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.hero-grid-fade {
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 100%);
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.orb-orange {
+  background: radial-gradient(circle, #FC6432 0%, transparent 70%);
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+.orb-amber {
+  background: radial-gradient(circle, #FFA726 0%, transparent 70%);
+  animation: float-reverse 10s ease-in-out infinite;
+}
+
+.orb-warm {
+  background: radial-gradient(circle, #FF7043 0%, transparent 70%);
+  animation: float 12s ease-in-out infinite;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.btn-stacks {
+  background: linear-gradient(135deg, #FC6432 0%, #e55a2b 100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-stacks::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #FF8A65 0%, #FFA726 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-stacks:hover::before { opacity: 1; }
+
+.btn-stacks:hover {
+  box-shadow: 0 0 25px rgba(252, 100, 50, 0.5), 0 0 50px rgba(252, 100, 50, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn-stacks > * {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-outline-glow {
+  border: 1px solid rgba(252, 100, 50, 0.35);
+  background: rgba(252, 100, 50, 0.06);
+  transition: all 0.3s ease;
+}
+
+.btn-outline-glow:hover {
+  border-color: rgba(252, 100, 50, 0.7);
+  background: rgba(252, 100, 50, 0.12);
+  box-shadow: 0 0 20px rgba(252, 100, 50, 0.2);
+}
+
+/* ============================================
+   3D CARD TILT
+   ============================================ */
+
+.card-3d {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: transform 0.3s ease;
+}
+
+.card-3d:hover {
+  transform: rotateX(2deg) rotateY(-2deg) translateZ(10px);
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+
+.stacks-badge {
+  background: linear-gradient(135deg, rgba(252, 100, 50, 0.2) 0%, rgba(255, 167, 38, 0.15) 100%);
+  border: 1px solid rgba(252, 100, 50, 0.35);
+  color: #FF8A65;
+  padding: 0.3rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================
+   DIVIDERS
+   ============================================ */
+
+.section-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(252, 100, 50, 0.35),
+    rgba(255, 167, 38, 0.2),
+    rgba(252, 100, 50, 0.35),
+    transparent
+  );
+}
+
+/* ============================================
+   ICON GLOW
+   ============================================ */
+
+.icon-glow {
+  background: linear-gradient(135deg, rgba(252, 100, 50, 0.2) 0%, rgba(255, 167, 38, 0.1) 100%);
+  border: 1px solid rgba(252, 100, 50, 0.25);
+  box-shadow: 0 0 20px rgba(252, 100, 50, 0.12);
+}
+
+/* ============================================
+   STAT CARDS
+   ============================================ */
+
+.stat-card {
+  background: linear-gradient(145deg, rgba(25, 25, 25, 0.9) 0%, rgba(15, 15, 15, 0.9) 100%);
+  border: 1px solid rgba(252, 100, 50, 0.15);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   LOADING SKELETON
+   ============================================ */
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-stacks {
+  background: linear-gradient(90deg, #141414 25%, #1f1f1f 50%, #141414 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* ============================================
+   NOISE TEXTURE OVERLAY
+   ============================================ */
+
+.noise-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ============================================
+   CONTENT CARD (Premium visible card)
+   ============================================ */
+
+.content-card {
+  background: linear-gradient(145deg, #1a1a1a 0%, #111111 100%);
+  border: 1px solid rgba(252, 100, 50, 0.25);
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    0 0 15px rgba(252, 100, 50, 0.06);
+}
+
+.content-card:hover {
+  border-color: rgba(252, 100, 50, 0.6);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(252, 100, 50, 0.15),
+    0 0 60px rgba(252, 100, 50, 0.05);
+  transform: translateY(-4px) scale(1.01);
+}
+
+.content-card:hover .content-card-image {
+  transform: scale(1.08);
+}
+
+.content-card-image {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Orange line accent at bottom of cards */
+.content-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #FC6432, #FFA726, #FC6432, transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.content-card:hover::after {
+  opacity: 1;
+}
+
+/* ============================================
+   SPARK CONNECTOR (How It Works lines)
+   Animated electrical spark traveling down
+   ============================================ */
+
+.spark-connector {
+  position: relative;
+  width: 2px;
+  height: 40px;
+  background: rgba(252, 100, 50, 0.15);
+  overflow: visible;
+}
+
+.spark-connector::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #FC6432;
+  box-shadow: 0 0 10px #FC6432, 0 0 20px rgba(252, 100, 50, 0.6);
+  animation: spark-travel 2s ease-in-out infinite;
+}
+
+.spark-connector::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(252, 100, 50, 0.6),
+    rgba(255, 167, 38, 0.3),
+    rgba(252, 100, 50, 0.6)
+  );
+  background-size: 100% 200%;
+  animation: spark-flow 1.5s ease-in-out infinite;
+}
+
+@keyframes spark-travel {
+  0% {
+    top: -4px;
+    opacity: 1;
+    box-shadow: 0 0 10px #FC6432, 0 0 20px rgba(252, 100, 50, 0.6);
+  }
+  50% {
+    top: calc(100% - 2px);
+    opacity: 1;
+    box-shadow: 0 0 14px #FFA726, 0 0 28px rgba(255, 167, 38, 0.7);
+  }
+  51% { opacity: 0; }
+  100% { top: -4px; opacity: 0; }
+}
+
+@keyframes spark-flow {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 0% 200%; }
+  100% { background-position: 0% 0%; }
+}
+
+/* Staggered spark delays */
+.spark-connector-1::before { animation-delay: 0s; }
+.spark-connector-1::after { animation-delay: 0s; }
+.spark-connector-2::before { animation-delay: 0.5s; }
+.spark-connector-2::after { animation-delay: 0.5s; }
+.spark-connector-3::before { animation-delay: 1s; }
+.spark-connector-3::after { animation-delay: 1s; }
+
+/* ============================================
+   HOW IT WORKS — Enhanced background
+   ============================================ */
+
+.how-it-works-bg {
+  position: relative;
+}
+
+.how-it-works-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 50% 30% at 10% 50%, rgba(0, 0, 0, 0.3) 0%, transparent 100%),
+    radial-gradient(ellipse 40% 40% at 90% 30%, rgba(0, 0, 0, 0.25) 0%, transparent 100%),
+    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(0, 0, 0, 0.3) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Floating embers */
+.ember {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 6px rgba(255, 200, 100, 0.8);
+  animation: ember-float 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes ember-float {
+  0% { transform: translateY(0) scale(1); opacity: 0; }
+  15% { opacity: 1; }
+  50% { transform: translateY(-60px) scale(0.5); opacity: 0.8; }
+  100% { transform: translateY(-120px) scale(0); opacity: 0; }
+}
+
+/* Dark protocol flow card */
+.flow-card-dark {
+  background: linear-gradient(145deg, #0d0d0d 0%, #080808 100%);
+  border: 1px solid rgba(252, 100, 50, 0.3);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(252, 100, 50, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Dark step inside the flow card */
+.flow-step-dark {
+  background: linear-gradient(145deg, rgba(20, 20, 20, 0.95) 0%, rgba(12, 12, 12, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s ease;
+}
+
+.flow-step-dark:hover {
+  border-color: rgba(252, 100, 50, 0.3);
+  box-shadow: 0 0 15px rgba(252, 100, 50, 0.08);
+}
