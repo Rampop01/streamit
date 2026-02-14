@@ -21,7 +21,7 @@ const createContentSchema = z.object({
     .min(20, 'Description must be at least 20 characters')
     .max(1000, 'Description must be at most 1000 characters'),
   embedUrl: z.string().url('Please enter a valid URL'),
-  thumbnailUrl: z.string().url('Please enter a valid thumbnail URL'),
+  thumbnailUrl: z.string().url('Please enter a valid image URL (https://...)'),
   priceInSTX: z
     .number()
     .min(0.01, 'Price must be at least 0.01 STX')
@@ -47,10 +47,31 @@ export function CreateContentForm({ onSuccess }: CreateContentFormProps) {
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<CreateContentFormData>({
     resolver: zodResolver(createContentSchema),
   });
+
+  const embedUrl = watch('embedUrl');
+
+  // Auto-extract YouTube thumbnail when video URL changes
+  const extractYouTubeThumbnail = (url: string) => {
+    try {
+      const parsed = new URL(url);
+      let videoId = '';
+      if (parsed.hostname.includes('youtube.com')) {
+        videoId = parsed.searchParams.get('v') || '';
+      } else if (parsed.hostname.includes('youtu.be')) {
+        videoId = parsed.pathname.slice(1);
+      }
+      if (videoId) {
+        return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+      }
+    } catch {}
+    return '';
+  };
 
   const onSubmit = async (data: CreateContentFormData) => {
     if (!address) {
@@ -191,7 +212,14 @@ export function CreateContentForm({ onSuccess }: CreateContentFormProps) {
             Video URL
           </label>
           <Input
-            {...register('embedUrl')}
+            {...register('embedUrl', {
+              onChange: (e) => {
+                const thumb = extractYouTubeThumbnail(e.target.value);
+                if (thumb) {
+                  setValue('thumbnailUrl', thumb);
+                }
+              },
+            })}
             placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
             className={inputClass}
           />
@@ -199,7 +227,7 @@ export function CreateContentForm({ onSuccess }: CreateContentFormProps) {
             <p className="text-red-400 text-xs mt-1.5">{errors.embedUrl.message}</p>
           )}
           <p className="text-[10px] text-muted-foreground mt-1.5">
-            YouTube or Vimeo links are supported
+            YouTube or Vimeo links are supported. Thumbnail auto-fills for YouTube.
           </p>
         </div>
 
@@ -217,6 +245,9 @@ export function CreateContentForm({ onSuccess }: CreateContentFormProps) {
               {errors.thumbnailUrl.message}
             </p>
           )}
+          <p className="text-[10px] text-muted-foreground mt-1.5">
+            Use a direct image URL (https://...). Auto-filled from YouTube links.
+          </p>
         </div>
 
         <div>

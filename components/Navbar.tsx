@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useWalletStore } from '@/lib/store';
-import { Wallet, Plus, Home, Zap, Menu, X, LogOut } from 'lucide-react';
+import { Wallet, Plus, Home, Zap, Menu, X, LogOut, Compass } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -63,7 +63,14 @@ export function Navbar() {
             <Link href="/">
               <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all duration-200">
                 <Home className="w-4 h-4" />
-                Discover
+                Home
+              </button>
+            </Link>
+
+            <Link href="/explore">
+              <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-white/5 transition-all duration-200">
+                <Compass className="w-4 h-4" />
+                Explore
               </button>
             </Link>
 
@@ -136,7 +143,13 @@ export function Navbar() {
               <Link href="/" onClick={() => setMobileOpen(false)}>
                 <div className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors">
                   <Home className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">Discover</span>
+                  <span className="text-sm">Home</span>
+                </div>
+              </Link>
+              <Link href="/explore" onClick={() => setMobileOpen(false)}>
+                <div className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors">
+                  <Compass className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm">Explore</span>
                 </div>
               </Link>
               {address && (

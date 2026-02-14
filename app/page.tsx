@@ -124,17 +124,7 @@ export default function Page() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32">
           <div className="text-center max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-block mb-8"
-            >
-              <div className="stacks-badge inline-flex items-center gap-2">
-                <Zap className="w-3.5 h-3.5" />
-                <span>Powered by x402-stacks Protocol</span>
-              </div>
-            </motion.div>
+           
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -217,7 +207,7 @@ export default function Page() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <FeatureCard icon={Zap} title="Instant Payments" description="One-click payments powered by x402-stacks. No sign-ups, no subscriptions. Just seamless STX transactions." delay={0} />
-            <FeatureCard icon={Lock} title="Client-Side Signing" description="Your private keys never leave your browser. All transactions are signed locally for maximum security." delay={0.1} />
+            <FeatureCard icon={Lock} title="Wallet-Signed Payments" description="Connect Leather or Xverse — your wallet signs every transaction. No private keys stored in the app." delay={0.1} />
             <FeatureCard icon={Shield} title="HTTP 402 Native" description="The first platform to natively implement the HTTP 402 Payment Required status code for content gating." delay={0.2} />
             <FeatureCard icon={Layers} title="Stacks Blockchain" description="Secured by Bitcoin through the Stacks layer. Every payment is verifiable and immutable." delay={0.3} />
             <FeatureCard icon={Globe} title="Open Protocol" description="Built on the open x402-stacks standard. Interoperable, composable, and ready for the decentralized web." delay={0.4} />
@@ -262,16 +252,16 @@ export default function Page() {
                   How It <span className="text-black/80">Works</span>
                 </h2>
                 <p className="text-white/80 mb-10">
-                  PayStream uses the x402-stacks facilitator pattern for secure, atomic payments.
+                  PayStream uses the x402-stacks HTTP 402 protocol with wallet-signed STX payments verified on-chain.
                 </p>
               </motion.div>
 
               <div className="space-y-8">
                 {[
-                  { step: 1, title: 'Set Up Your Wallet', desc: 'Generate a new Stacks testnet wallet or import your existing private key.' },
+                  { step: 1, title: 'Connect Your Wallet', desc: 'Connect your Leather or Xverse wallet in one click. No private keys stored in the browser.' },
                   { step: 2, title: 'Browse Premium Content', desc: 'Explore the marketplace and discover content from creators worldwide.' },
-                  { step: 3, title: 'Pay with STX', desc: 'Click unlock — your browser signs the transaction locally, and the x402 protocol handles the rest.' },
-                  { step: 4, title: 'Own Forever', desc: 'Once paid, the content is yours forever. No recurring fees, no expiration.' },
+                  { step: 3, title: 'Pay with STX', desc: 'Click unlock — the server returns an HTTP 402 with payment details, and your wallet signs the STX transfer.' },
+                  { step: 4, title: 'Own Forever', desc: 'Payment is verified on-chain via the Stacks blockchain. Content is yours forever.' },
                 ].map((item, i) => (
                   <motion.div
                     key={item.step}
@@ -343,8 +333,8 @@ export default function Page() {
                     <Lock className="w-5 h-5 text-stacks-orange-light" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-sm font-medium text-white">Client Signs Transaction</div>
-                    <div className="text-xs text-white/50">Private key never leaves browser</div>
+                    <div className="text-sm font-medium text-white">Wallet Signs & Pays</div>
+                    <div className="text-xs text-white/50">Leather/Xverse signs the STX transfer</div>
                   </div>
                 </div>
 
@@ -371,7 +361,7 @@ export default function Page() {
 
       <div className="section-divider" />
 
-      {/* CONTENT GRID */}
+      {/* FEATURED CONTENT — show up to 3 items */}
       <section id="content" className="relative py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -386,15 +376,23 @@ export default function Page() {
                 Featured <span className="gradient-text-stacks">Content</span>
               </h2>
               <p className="text-muted-foreground">
-                {content.length} {content.length === 1 ? 'item' : 'items'} available
+                Handpicked from the marketplace
               </p>
             </div>
-            <Link href="/create">
-              <button className="btn-outline-glow h-10 px-6 rounded-lg text-sm font-medium flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                Create Content
-              </button>
-            </Link>
+            <div className="flex gap-3">
+              <Link href="/explore">
+                <button className="btn-outline-glow h-10 px-6 rounded-lg text-sm font-medium flex items-center gap-2">
+                  <Globe className="w-4 h-4" />
+                  View All
+                </button>
+              </Link>
+              <Link href="/create">
+                <button className="btn-stacks h-10 px-6 rounded-lg text-white text-sm font-medium flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  Create
+                </button>
+              </Link>
+            </div>
           </motion.div>
 
           {error && (
@@ -406,7 +404,7 @@ export default function Page() {
 
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
+              {[...Array(3)].map((_, i) => (
                 <div key={i} className="space-y-2">
                   <Skeleton className="w-full aspect-video skeleton-stacks rounded-xl" />
                   <Skeleton className="h-4 w-3/4 skeleton-stacks rounded" />
@@ -415,19 +413,36 @@ export default function Page() {
               ))}
             </div>
           ) : content.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {content.map((item, index) => (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {content.slice(0, 3).map((item, index) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                  >
+                    <ContentCard content={item} />
+                  </motion.div>
+                ))}
+              </div>
+              {content.length > 3 && (
                 <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
+                  className="text-center mt-10"
                 >
-                  <ContentCard content={item} />
+                  <Link href="/explore">
+                    <button className="btn-outline-glow h-11 px-8 rounded-lg text-sm font-medium inline-flex items-center gap-2">
+                      View all {content.length} items
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </Link>
                 </motion.div>
-              ))}
-            </div>
+              )}
+            </>
           ) : (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
