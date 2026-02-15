@@ -32,7 +32,7 @@ export default function ExplorePage() {
   });
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-background relative overflow-x-hidden">
       <Navbar />
 
       <div className="orb orb-orange w-[400px] h-[400px] -top-32 -right-32 opacity-15" />
@@ -155,6 +155,7 @@ export default function ExplorePage() {
             {filtered.map((item, index) => (
               <motion.div
                 key={item.id}
+                className="h-full"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.05 }}

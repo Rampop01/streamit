@@ -87,7 +87,7 @@ export default function Page() {
   const { content, isLoading, error } = useContent();
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-background relative overflow-x-hidden">
       <Navbar />
 
       {/* HERO SECTION */}
@@ -418,6 +418,7 @@ export default function Page() {
                 {content.slice(0, 3).map((item, index) => (
                   <motion.div
                     key={item.id}
+                    className="h-full"
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}

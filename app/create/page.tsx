@@ -19,7 +19,7 @@ export default function CreatePage() {
   };
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-background relative overflow-x-hidden">
       <Navbar />
 
       {/* Background effects */}

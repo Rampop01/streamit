@@ -9,7 +9,9 @@ import { Content } from '@/lib/types';
 export async function GET(req: NextRequest) {
   try {
     const content = await getAllContent();
-    return NextResponse.json(content);
+    // Strip articleBody from list responses (premium content)
+    const safeContent = content.map(({ articleBody, ...rest }) => rest);
+    return NextResponse.json(safeContent);
   } catch (error) {
     console.error('[x402] Error fetching content:', error);
     return NextResponse.json(
@@ -28,13 +30,12 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     // Validate required fields
-    const { title, description, embedUrl, thumbnailUrl, priceInSTX, creatorAddress, creatorName } =
+    const { title, description, thumbnailUrl, priceInSTX, creatorAddress, creatorName, contentType } =
       body;
 
     if (
       !title ||
       !description ||
-      !embedUrl ||
       !thumbnailUrl ||
       !priceInSTX ||
       !creatorAddress ||
@@ -53,11 +54,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const type = contentType || 'video';
+
+    if (type === 'video' && !body.embedUrl) {
+      return NextResponse.json(
+        { error: 'Video URL is required for video content' },
+        { status: 400 }
+      );
+    }
+
+    if (type === 'article' && !body.articleBody) {
+      return NextResponse.json(
+        { error: 'Article body is required for article content' },
+        { status: 400 }
+      );
+    }
+
     // Create content entry
     const newContent = await addContent({
       title,
       description,
-      embedUrl,
+      contentType: type,
+      embedUrl: body.embedUrl || '',
+      articleBody: type === 'article' ? body.articleBody : undefined,
       thumbnailUrl,
       priceInSTX: Number(priceInSTX),
       creatorAddress,

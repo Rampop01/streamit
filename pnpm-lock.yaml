@@ -5984,7 +5984,7 @@ snapshots:
 
   jsontokens@4.0.1:
     dependencies:
-      '@noble/hashes': 1.1.5
+      '@noble/hashes': 1.8.0
       '@noble/secp256k1': 1.7.1
       base64-js: 1.5.1
 

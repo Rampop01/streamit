@@ -32,10 +32,10 @@ export async function GET(
       );
     }
 
-    // Preview mode: return content metadata without embedUrl (no payment required)
+    // Preview mode: return content metadata without premium content (no payment required)
     const { searchParams } = new URL(req.url);
     if (searchParams.get('preview') === 'true') {
-      const { embedUrl, ...preview } = content;
+      const { embedUrl, articleBody, ...preview } = content;
       return NextResponse.json(preview);
     }
 

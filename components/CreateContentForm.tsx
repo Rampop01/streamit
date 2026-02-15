@@ -8,8 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useWalletStore } from '@/lib/store';
 import { toast } from 'sonner';
-import { Upload, Wallet, Loader2 } from 'lucide-react';
+import { Upload, Wallet, Loader2, Video, FileText, Eye, PenLine } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { ContentType } from '@/lib/types';
+import { ArticleRenderer } from '@/components/ArticleRenderer';
 
 const createContentSchema = z.object({
   title: z
@@ -20,7 +22,8 @@ const createContentSchema = z.object({
     .string()
     .min(20, 'Description must be at least 20 characters')
     .max(1000, 'Description must be at most 1000 characters'),
-  embedUrl: z.string().url('Please enter a valid URL'),
+  embedUrl: z.string().optional(),
+  articleBody: z.string().optional(),
   thumbnailUrl: z.string().url('Please enter a valid image URL (https://...)'),
   priceInSTX: z
     .number()
@@ -42,6 +45,8 @@ interface CreateContentFormProps {
 export function CreateContentForm({ onSuccess }: CreateContentFormProps) {
   const { address } = useWalletStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contentType, setContentType] = useState<ContentType>('video');
+  const [articleTab, setArticleTab] = useState<'write' | 'preview'>('write');
 
   const {
     register,
@@ -54,9 +59,6 @@ export function CreateContentForm({ onSuccess }: CreateContentFormProps) {
     resolver: zodResolver(createContentSchema),
   });
 
-  const embedUrl = watch('embedUrl');
-
-  // Auto-extract YouTube thumbnail when video URL changes
   const extractYouTubeThumbnail = (url: string) => {
     try {
       const parsed = new URL(url);
@@ -79,6 +81,16 @@ export function CreateContentForm({ onSuccess }: CreateContentFormProps) {
       return;
     }
 
+    // Validate based on content type
+    if (contentType === 'video' && !data.embedUrl) {
+      toast.error('Please enter a video URL');
+      return;
+    }
+    if (contentType === 'article' && !data.articleBody) {
+      toast.error('Please write your article content');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const response = await fetch('/api/content', {
@@ -86,6 +98,9 @@ export function CreateContentForm({ onSuccess }: CreateContentFormProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...data,
+          contentType,
+          embedUrl: contentType === 'video' ? data.embedUrl : '',
+          articleBody: contentType === 'article' ? data.articleBody : undefined,
           creatorAddress: address,
           priceInSTX: Number(data.priceInSTX),
         }),
@@ -165,6 +180,39 @@ export function CreateContentForm({ onSuccess }: CreateContentFormProps) {
   return (
     <div className="glass-card rounded-xl p-8">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Content Type Selector */}
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+            Content Type
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setContentType('video')}
+              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                contentType === 'video'
+                  ? 'bg-stacks-orange text-white shadow-lg shadow-stacks-orange/20'
+                  : 'bg-white/5 border border-border/50 text-muted-foreground hover:text-foreground hover:border-stacks-orange/30'
+              }`}
+            >
+              <Video className="w-4 h-4" />
+              Video
+            </button>
+            <button
+              type="button"
+              onClick={() => setContentType('article')}
+              className={`flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                contentType === 'article'
+                  ? 'bg-stacks-orange text-white shadow-lg shadow-stacks-orange/20'
+                  : 'bg-white/5 border border-border/50 text-muted-foreground hover:text-foreground hover:border-stacks-orange/30'
+              }`}
+            >
+              <FileText className="w-4 h-4" />
+              Article
+            </button>
+          </div>
+        </div>
+
         <div>
           <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
             Content Title
@@ -185,8 +233,8 @@ export function CreateContentForm({ onSuccess }: CreateContentFormProps) {
           </label>
           <Textarea
             {...register('description')}
-            placeholder="Describe what viewers will learn or experience..."
-            rows={4}
+            placeholder="Describe what readers/viewers will learn or experience..."
+            rows={3}
             className={inputClass}
           />
           {errors.description && (
@@ -207,29 +255,96 @@ export function CreateContentForm({ onSuccess }: CreateContentFormProps) {
           />
         </div>
 
-        <div>
-          <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
-            Video URL
-          </label>
-          <Input
-            {...register('embedUrl', {
-              onChange: (e) => {
-                const thumb = extractYouTubeThumbnail(e.target.value);
-                if (thumb) {
-                  setValue('thumbnailUrl', thumb);
-                }
-              },
-            })}
-            placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
-            className={inputClass}
-          />
-          {errors.embedUrl && (
-            <p className="text-red-400 text-xs mt-1.5">{errors.embedUrl.message}</p>
-          )}
-          <p className="text-[10px] text-muted-foreground mt-1.5">
-            YouTube or Vimeo links are supported. Thumbnail auto-fills for YouTube.
-          </p>
-        </div>
+        {/* Video-specific fields */}
+        {contentType === 'video' && (
+          <div>
+            <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
+              Video URL
+            </label>
+            <Input
+              {...register('embedUrl', {
+                onChange: (e) => {
+                  const thumb = extractYouTubeThumbnail(e.target.value);
+                  if (thumb) {
+                    setValue('thumbnailUrl', thumb);
+                  }
+                },
+              })}
+              placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
+              className={inputClass}
+            />
+            {errors.embedUrl && (
+              <p className="text-red-400 text-xs mt-1.5">{errors.embedUrl.message}</p>
+            )}
+            <p className="text-[10px] text-muted-foreground mt-1.5">
+              YouTube or Vimeo links are supported. Thumbnail auto-fills for YouTube.
+            </p>
+          </div>
+        )}
+
+        {/* Article-specific fields with Write/Preview tabs */}
+        {contentType === 'article' && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Article Content
+              </label>
+              <div className="flex rounded-lg overflow-hidden border border-border/50">
+                <button
+                  type="button"
+                  onClick={() => setArticleTab('write')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-all ${
+                    articleTab === 'write'
+                      ? 'bg-stacks-orange text-white'
+                      : 'bg-white/5 text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <PenLine className="w-3 h-3" />
+                  Write
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setArticleTab('preview')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-all ${
+                    articleTab === 'preview'
+                      ? 'bg-stacks-orange text-white'
+                      : 'bg-white/5 text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Eye className="w-3 h-3" />
+                  Preview
+                </button>
+              </div>
+            </div>
+
+            {articleTab === 'write' ? (
+              <>
+                <Textarea
+                  {...register('articleBody')}
+                  placeholder={`Write your premium article content here...\n\nFormatting tips:\n## Heading\n**bold text**\n- bullet list\n1. numbered list\n![alt text](https://image-url.com/image.jpg)`}
+                  rows={14}
+                  className={inputClass}
+                />
+                {errors.articleBody && (
+                  <p className="text-red-400 text-xs mt-1.5">{errors.articleBody.message}</p>
+                )}
+                <p className="text-[10px] text-muted-foreground mt-1.5">
+                  Supports markdown: ## Headings, **bold**, - lists, ![images](url). Only visible after payment.
+                </p>
+              </>
+            ) : (
+              <div className="rounded-lg border border-border/50 bg-white/5 p-6 min-h-[320px]">
+                {watch('articleBody') ? (
+                  <ArticleRenderer body={watch('articleBody') || ''} />
+                ) : (
+                  <p className="text-muted-foreground/50 text-sm italic">
+                    Start writing to see the preview...
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
 
         <div>
           <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">
@@ -246,7 +361,9 @@ export function CreateContentForm({ onSuccess }: CreateContentFormProps) {
             </p>
           )}
           <p className="text-[10px] text-muted-foreground mt-1.5">
-            Use a direct image URL (https://...). Auto-filled from YouTube links.
+            {contentType === 'video'
+              ? 'Use a direct image URL (https://...). Auto-filled from YouTube links.'
+              : 'Use a direct image URL (https://...) as the cover image for your article.'}
           </p>
         </div>
 
@@ -297,7 +414,7 @@ export function CreateContentForm({ onSuccess }: CreateContentFormProps) {
           ) : (
             <>
               <Upload className="w-4 h-4" />
-              <span>Create Content</span>
+              <span>Create {contentType === 'video' ? 'Video' : 'Article'}</span>
             </>
           )}
         </button>

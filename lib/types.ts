@@ -1,9 +1,13 @@
 // Core content data model for PayStream
+export type ContentType = 'video' | 'article';
+
 export interface Content {
   id: string;
   title: string;
   description: string;
-  embedUrl: string; // YouTube/Vimeo URL
+  contentType: ContentType; // 'video' or 'article'
+  embedUrl: string; // YouTube/Vimeo URL (for video) or unused (for article)
+  articleBody?: string; // Markdown/text body (for article content)
   thumbnailUrl: string;
   priceInSTX: number; // Price in STX (not microSTX)
   creatorAddress: string;

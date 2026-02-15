@@ -8,6 +8,7 @@ import { VideoPlayer } from '@/components/VideoPlayer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useContentById } from '@/hooks/useContent';
 import { Content } from '@/lib/types';
+import { ArticleRenderer } from '@/components/ArticleRenderer';
 import { Eye, Share2, ArrowLeft, Sparkles, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -32,7 +33,7 @@ export default function ContentPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background relative">
+      <div className="min-h-screen bg-background relative overflow-x-hidden">
         <Navbar />
         <main className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <motion.div
@@ -91,16 +92,22 @@ export default function ContentPage() {
           </div>
         ) : content ? (
           <div className="space-y-8">
-            {/* Video or Thumbnail */}
+            {/* Content Display */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
               {unlockedContent ? (
-                <div className="rounded-xl overflow-hidden electric-glow">
-                  <VideoPlayer embedUrl={unlockedContent.embedUrl} />
-                </div>
+                (content.contentType || 'video') === 'article' ? (
+                  <div className="glass-card rounded-xl p-8 md:p-10 electric-glow">
+                    <ArticleRenderer body={unlockedContent.articleBody || ''} />
+                  </div>
+                ) : (
+                  <div className="rounded-xl overflow-hidden electric-glow">
+                    <VideoPlayer embedUrl={unlockedContent.embedUrl} />
+                  </div>
+                )
               ) : (
                 <div className="relative rounded-xl overflow-hidden">
                   <img
