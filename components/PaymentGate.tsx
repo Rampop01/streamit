@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useWalletStore } from '@/lib/store';
-import { openSTXTransfer } from '@stacks/connect';
-import { STXtoMicroSTX } from 'x402-stacks';
+// @stacks/connect is loaded dynamically to avoid bundler issues on Vercel
+// x402-stacks is loaded dynamically to avoid bundler issues on Vercel
 import { toast } from 'sonner';
 import { Lock, Zap, Loader2, ExternalLink, Wallet, CheckCircle, Clock, Copy, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -67,7 +67,8 @@ export function PaymentGate({
       const x402Response = await fetch(`/api/content/${contentId}`);
 
       let payTo = creatorAddress;
-      let amountMicroSTX = STXtoMicroSTX(price);
+      const { STXtoMicroSTX } = await import('x402-stacks');
+      let amountMicroSTX: bigint = BigInt(STXtoMicroSTX(price));
 
       if (x402Response.status === 402) {
         try {
@@ -75,7 +76,7 @@ export function PaymentGate({
           if (body?.accepts?.[0]) {
             const accept = body.accepts[0];
             payTo = accept.payTo || creatorAddress;
-            amountMicroSTX = parseInt(accept.amount) || amountMicroSTX;
+            amountMicroSTX = BigInt(parseInt(accept.amount)) || amountMicroSTX;
           }
           console.log('[x402] 402 Payment Required — Amount:', amountMicroSTX, 'PayTo:', payTo);
         } catch {
@@ -92,9 +93,10 @@ export function PaymentGate({
       // Step 2: Open wallet extension to sign & broadcast STX transfer
       setStep('waitingWallet');
 
+      const { openSTXTransfer } = await import('@stacks/connect');
       openSTXTransfer({
         recipient: payTo,
-        amount: BigInt(amountMicroSTX),
+        amount: amountMicroSTX,
         memo: `PayStream: ${contentId}`,
         network: 'testnet',
         onFinish: async (data) => {
