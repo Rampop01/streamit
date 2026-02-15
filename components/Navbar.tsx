@@ -28,9 +28,16 @@ export function Navbar() {
         setAddress(stxAddress.address);
         toast.success('Wallet connected!');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Wallet connection error:', error);
-      toast.error('Failed to connect. Install Leather or Xverse wallet.');
+      const msg = error?.message || String(error);
+      if (msg.includes('user_canceled') || msg.includes('cancel')) {
+        toast.error('Connection cancelled.');
+      } else if (msg.includes('no_wallet') || msg.includes('provider')) {
+        toast.error('No Stacks wallet detected. Install Leather or Xverse extension.');
+      } else {
+        toast.error(`Wallet error: ${msg.slice(0, 120)}`);
+      }
     } finally {
       setConnecting(false);
     }
@@ -39,7 +46,7 @@ export function Navbar() {
   const handleDisconnect = () => {
     try {
       import('@stacks/connect').then(({ disconnect }) => disconnect());
-    } catch {}
+    } catch { }
     clearWallet();
     toast.success('Wallet disconnected');
   };

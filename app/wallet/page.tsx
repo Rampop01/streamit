@@ -20,16 +20,17 @@ export default function WalletPage() {
         setAddress(stxAddress.address);
         toast.success('Wallet connected!');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Wallet connection error:', error);
-      toast.error('Failed to connect. Install Leather or Xverse wallet.');
+      const msg = error?.message || String(error);
+      toast.error(`Wallet error: ${msg.slice(0, 120)}`);
     }
   };
 
   const handleDisconnect = () => {
     try {
       import('@stacks/connect').then(({ disconnect }) => disconnect());
-    } catch {}
+    } catch { }
     clearWallet();
     toast.success('Wallet disconnected');
   };
