@@ -12,6 +12,7 @@ import { Upload, Wallet, Loader2, Video, FileText, Eye, PenLine } from 'lucide-r
 import { motion } from 'framer-motion';
 import { ContentType } from '@/lib/types';
 import { ArticleRenderer } from '@/components/ArticleRenderer';
+import { connect } from '@stacks/connect';
 
 
 const createContentSchema = z.object({
@@ -135,7 +136,6 @@ export function CreateContentForm({ onSuccess }: CreateContentFormProps) {
 
   const handleConnectWallet = async () => {
     try {
-      const { connect } = await import('@stacks/connect');
       const result = await connect();
       const stxAddress = result.addresses.find(
         (a) => a.symbol === 'STX'

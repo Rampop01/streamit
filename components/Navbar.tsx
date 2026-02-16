@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
 
+import { connect, disconnect } from '@stacks/connect';
+
 export function Navbar() {
   const { address, setAddress, clearWallet } = useWalletStore();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -20,7 +22,6 @@ export function Navbar() {
   const handleConnect = async () => {
     setConnecting(true);
     try {
-      const { connect } = await import('@stacks/connect');
       const result = await connect();
       const stxAddress = result.addresses.find(
         (a) => a.symbol === 'STX'
@@ -46,7 +47,7 @@ export function Navbar() {
 
   const handleDisconnect = () => {
     try {
-      import('@stacks/connect').then(({ disconnect }) => disconnect());
+      disconnect();
     } catch { }
     clearWallet();
     toast.success('Wallet disconnected');

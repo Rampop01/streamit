@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useWalletStore } from '@/lib/store';
+import { openSTXTransfer, connect } from '@stacks/connect';
 import { STXtoMicroSTX } from 'x402-stacks';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -100,9 +101,6 @@ export function PaymentGate({
 
       // Step 2: Open wallet extension to sign & broadcast STX transfer
       setStep('waitingWallet');
-
-      // Dynamic import to avoid SSR issues with @stacks/connect
-      const { openSTXTransfer } = await import('@stacks/connect');
 
       openSTXTransfer({
         recipient: payTo,
@@ -379,8 +377,6 @@ function ConnectWalletButton() {
 
   const handleConnect = async () => {
     try {
-      // Dynamic import
-      const { connect } = await import('@stacks/connect');
       const result = await connect();
       const stxAddress = result.addresses.find((a) => a.symbol === 'STX');
       if (stxAddress) {
